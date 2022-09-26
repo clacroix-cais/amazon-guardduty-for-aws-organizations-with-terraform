@@ -16,11 +16,10 @@
 #  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 terraform {
-  required_version = "= 0.14.6"
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "3.74.0"
+      source                = "hashicorp/aws"
+      configuration_aliases = [aws.management]
     }
   }
 }

@@ -34,8 +34,9 @@ variable "tags" {
   }
 }
 
-variable "gd_my_org" {
-  description = "The AWS Organization with all the accounts"
+variable "gd_my_org_accounts" {
+  type        = list(map(string))
+  description = "The AWS Organization accounts"
 }
 
 variable "gd_publishing_dest_bucket_arn" {

@@ -26,7 +26,7 @@ resource "aws_iam_role" "GuardDutyTerraformSecurityAcctRole" {
         Effect = "Allow"
         Sid    = "AllowAssumeRole"
         Principal = {
-          "AWS" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+          "AWS" = "arn:aws:iam::${data.aws_caller_identity.management.account_id}:root"
         }
       }
     ]
@@ -89,4 +89,3 @@ resource "aws_iam_role_policy_attachment" "attach_gd_terraform_security_acct_pol
   role       = aws_iam_role.GuardDutyTerraformSecurityAcctRole.name
   policy_arn = aws_iam_policy.gd_terraform_security_acct_policy.arn
 }
-

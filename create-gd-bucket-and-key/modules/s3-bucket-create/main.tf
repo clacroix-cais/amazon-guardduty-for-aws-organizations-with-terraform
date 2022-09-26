@@ -282,7 +282,7 @@ resource "aws_s3_bucket" "gd_bucket" {
   force_destroy = true
 
   logging {
-    target_bucket = var.s3_access_log_bucket_name
+    target_bucket = aws_s3_bucket.gd_bucket_logs.id
     target_prefix = "log/"
   }
   versioning {
@@ -317,20 +317,29 @@ resource "aws_s3_bucket" "gd_bucket" {
 }
 
 resource "aws_s3_bucket_public_access_block" "gd_bucket_block_public" {
-  depends_on = [aws_s3_bucket.gd_bucket, aws_s3_bucket_policy.gd_bucket_policy]
-  bucket = aws_s3_bucket.gd_bucket.id
-  provider   = aws.src
-  block_public_acls   = true
-  block_public_policy = true
+  depends_on              = [aws_s3_bucket.gd_bucket, aws_s3_bucket_policy.gd_bucket_policy]
+  bucket                  = aws_s3_bucket.gd_bucket.id
+  provider                = aws.src
+  block_public_acls       = true
+  block_public_policy     = true
   restrict_public_buckets = true
-  ignore_public_acls = true
+  ignore_public_acls      = true
 }
 
 resource "aws_s3_bucket_policy" "gd_bucket_policy" {
   depends_on = [aws_s3_bucket.gd_bucket]
-  provider = aws.src
-  bucket   = aws_s3_bucket.gd_bucket.id
-  policy   = data.aws_iam_policy_document.bucket_pol.json
+  provider   = aws.src
+  bucket     = aws_s3_bucket.gd_bucket.id
+  policy     = data.aws_iam_policy_document.bucket_pol.json
 }
 
+resource "aws_s3_bucket" "gd_bucket_logs" {
+  bucket   = var.s3_access_log_bucket_name
+  provider = aws.src
+}
 
+resource "aws_s3_bucket_acl" "gd_bucket_logs_acl" {
+  bucket   = aws_s3_bucket.gd_bucket_logs.id
+  provider = aws.src
+  acl      = "log-delivery-write"
+}

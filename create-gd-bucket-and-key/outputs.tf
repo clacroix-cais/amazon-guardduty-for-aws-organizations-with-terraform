@@ -24,3 +24,8 @@ output "guardduty_findings_kms_key_arn" {
   description = "The GuardDuty findings bucket in the logging account"
   value       = module.gd_findings_bucket_and_key.guardduty_kms_key_arn
 }
+
+output "guardduty_findings_bucket_name" {
+  description = "The GuardDuty findings bucket name."
+  value       = module.gd_findings_bucket_and_key.guardduty_findings_bucket_name
+}

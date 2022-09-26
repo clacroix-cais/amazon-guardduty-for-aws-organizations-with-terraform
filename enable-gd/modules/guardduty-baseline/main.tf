@@ -16,7 +16,7 @@
 #  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 locals {
-  mem_accounts = var.gd_my_org.accounts
+  mem_accounts = var.gd_my_org_accounts
   deleg_admin  = var.gd_delegated_admin_acc_id
   temp = [
     for x in local.mem_accounts :
@@ -27,13 +27,13 @@ locals {
 # GuardDuty Detector in the Delegated admin account
 resource "aws_guardduty_detector" "MyDetector" {
   provider   = aws.dst
-  depends_on = [var.gd_my_org]
+  depends_on = [var.gd_my_org_accounts]
 
   count = var.enabled ? 1 : 0
 
   enable                       = true
   finding_publishing_frequency = var.gd_finding_publishing_frequency
-  
+
   # Additional setting to turn on S3 Protection
   datasources {
     s3_logs {
@@ -63,7 +63,7 @@ resource "aws_guardduty_organization_configuration" "MyGDOrg" {
 
   auto_enable = true
   detector_id = aws_guardduty_detector.MyDetector[0].id
-  
+
   # Additional setting to turn on S3 Protection
   datasources {
     s3_logs {

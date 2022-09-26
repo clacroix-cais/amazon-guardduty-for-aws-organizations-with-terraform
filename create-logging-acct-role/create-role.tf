@@ -26,7 +26,7 @@ resource "aws_iam_role" "GuardDutyTerraformLoggingAcctRole" {
         Effect = "Allow"
         Sid    = "AllowAssumeRole"
         Principal = {
-          "AWS" = "arn:aws:iam::${data.aws_caller_identity.primary_account.account_id}:root"
+          "AWS" = "arn:aws:iam::${data.aws_caller_identity.management_account.id}:root"
         }
       }
     ]
@@ -45,8 +45,8 @@ data "aws_iam_policy_document" "logging_acct_pol" {
       "s3:*"
     ]
     resources = [
-      join("", ["arn:aws:s3:::", <logging_acc_s3_bucket_name>, "*"]),
-      join("", ["arn:aws:s3:::", <logging_acc_s3_bucket_name>, "*/*"])
+      join("", ["arn:aws:s3:::", var.logging_acc_s3_bucket_name, "*"]),
+      join("", ["arn:aws:s3:::", var.logging_acc_s3_bucket_name, "*/*"])
     ]
   }
   statement {
@@ -72,25 +72,25 @@ data "aws_iam_policy_document" "logging_acct_pol" {
       "*"
     ]
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "kms:CallerAccount"
-      values = [data.aws_caller_identity.logging_account.account_id]
+      values   = [data.aws_caller_identity.current.id]
     }
   }
   statement {
-    sid = "AllowIamPerms"
-    effect = "Allow"
-    actions = ["iam:GetRole"]
+    sid       = "AllowIamPerms"
+    effect    = "Allow"
+    actions   = ["iam:GetRole"]
     resources = ["arn:aws:iam::*:role/aws-service-role/*guardduty.amazonaws.com/*"]
   }
   statement {
-    sid = "AllowSvcLinkedRolePerms"
-    actions = ["iam:CreateServiceLinkedRole"]
+    sid       = "AllowSvcLinkedRolePerms"
+    actions   = ["iam:CreateServiceLinkedRole"]
     resources = ["arn:aws:iam::*:role/aws-service-role/*guardduty.amazonaws.com/*"]
     condition {
-      test = "StringLike"
+      test     = "StringLike"
       variable = "iam:AWSServiceName"
-      values = ["guardduty.amazonaws.com"]
+      values   = ["guardduty.amazonaws.com"]
     }
   }
 }
@@ -104,5 +104,3 @@ resource "aws_iam_role_policy_attachment" "attach_gd_terraform_logging_acct_poli
   role       = aws_iam_role.GuardDutyTerraformLoggingAcctRole.name
   policy_arn = aws_iam_policy.gd_terraform_logging_acct_policy.arn
 }
-
-

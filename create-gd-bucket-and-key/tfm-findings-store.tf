@@ -16,12 +16,11 @@
 
 # Create (one-time) the S3 bucket and KMS CMK for GuardDuty findings
 module "gd_findings_bucket_and_key" {
-  source = "./modules/s3-bucket-create"
-
   providers = {
-    aws.src = aws.default
+    aws     = aws
+    aws.src = aws.logging
   }
-
+  source                                            = "./modules/s3-bucket-create"
   logging_acc_id                                    = var.logging_acc_id
   assume_role_name                                  = var.assume_role_name
   kms_key_alias                                     = var.logging_acc_kms_key_alias
